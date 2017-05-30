@@ -129,7 +129,6 @@ public class populate {
 	 }
 	
 	private void publishDataUsingPreparedStatement(Connection con) throws SQLException { 
-		
 
 		PreparedStatement stmt1 = con.prepareStatement("INSERT INTO MOVIE_ACTORS VALUES(?,?,?,?)"); 
 		System.out.println("Deleting previous tuples ..."); 
