@@ -112,7 +112,7 @@ class MainClass extends JFrame {
         	
             if(con != null)
             {
-                System.out.println("Connected to Database");
+                System.out.println("Connected to Database Successfully!");
             }
         }
         catch(Exception ex)
@@ -123,7 +123,7 @@ class MainClass extends JFrame {
 	
 	private void populateGenre() {
 		
-		String GetGenre = "SELECT DISTINCT MG.Genre FROM MOVIE_GENRES MG\n";
+		String GetGenre = "SELECT DISTINCT MG.Genre FROM MOVIE_GENRES MG ORDER BY MG.Genre\n";
 		queryarea.setText(GetGenre);
 		try {
 			ResultSet rs11 = null;
@@ -191,7 +191,7 @@ class MainClass extends JFrame {
 						
 						FinalSubQuery = "SELECT DISTINCT M.MOVIEID FROM MOVIES M WHERE M.MOVIEID IN \n("+FinalSubQuery+") AND MYEAR>="+fromYear.getSelectedItem()+" AND MYEAR<="+toYear.getSelectedItem()+"";
 						
-						FinalSubQuery = " SELECT DISTINCT MC.Country FROM Movie_Countries MC WHERE MC.MOVIEID IN \n("+FinalSubQuery+")";
+						FinalSubQuery = " SELECT DISTINCT MC.Country FROM Movie_Countries MC WHERE MC.MOVIEID IN \n("+FinalSubQuery+") ORDER BY MC.Country";
 						queryarea.setText(FinalSubQuery);
 						try {
 							ResultSet rs12 = null;
@@ -242,7 +242,7 @@ class MainClass extends JFrame {
 					
 					FinalSubQuery = "SELECT DISTINCT M.MOVIEID FROM MOVIES M WHERE M.MOVIEID IN \n("+FinalSubQuery+") AND MYEAR>="+fromYear.getSelectedItem()+" AND MYEAR<="+toYear.getSelectedItem()+"";
 					
-					FinalSubQuery = " SELECT DISTINCT MC.Country FROM Movie_Countries MC WHERE MC.MOVIEID IN \n("+FinalSubQuery+")";
+					FinalSubQuery = " SELECT DISTINCT MC.Country FROM Movie_Countries MC WHERE MC.MOVIEID IN \n("+FinalSubQuery+") ORDER BY MC.Country";
 					queryarea.setText(FinalSubQuery);
 					try {
 						ResultSet rs12 = null;
@@ -305,7 +305,7 @@ class MainClass extends JFrame {
 						FinalSubQuery = "SELECT DISTINCT M.MOVIEID FROM MOVIES M WHERE M.MOVIEID IN \n("+FinalSubQuery+") AND MYEAR>="+fromYear.getSelectedItem()+" AND MYEAR<="+toYear.getSelectedItem()+"";
 						
 						String ActorsSubQuery = "SELECT DISTINCT MA.ACTORNAME FROM MOVIE_ACTORS MA WHERE MA.MOVIEID IN \n("+FinalSubQuery+") ORDER BY MA.ACTORNAME";
-						String DirectorsSubQuery = "SELECT DISTINCT MD.DIRECTORNAME FROM MOVIE_DIRECTORS MD WHERE MD.MOVIEID IN \n("+FinalSubQuery+")";
+						String DirectorsSubQuery = "SELECT DISTINCT MD.DIRECTORNAME FROM MOVIE_DIRECTORS MD WHERE MD.MOVIEID IN \n("+FinalSubQuery+") ORDER BY MD.DIRECTORNAME";
 						
 						queryarea.setText(ActorsSubQuery);
 						try {
@@ -367,6 +367,11 @@ class MainClass extends JFrame {
 					} else {
 						selectedCastList = (ArrayList<String>) castList.getSelectedValuesList();
 					}
+					if(contryList.getSelectedValuesList().isEmpty()) {
+						selectedCountryList = new ArrayList();
+					} else {
+						selectedCountryList = (ArrayList<String>) contryList.getSelectedValuesList();
+					}
 					if(directorList.getSelectedValuesList().isEmpty()) {
 						selectedDirectorList = new ArrayList();
 					} else {
@@ -374,13 +379,12 @@ class MainClass extends JFrame {
 					}
 					
 					addTagList.clear();
-		            String FinalSubQuery = "SELECT MG.MOVIEID FROM Movie_Genres MG";
-		            FinalSubQuery = (selectedGenreList.size()>0)?FinalSubQuery+" WHERE":FinalSubQuery;
+		            String FinalSubQuery = "SELECT MG.MOVIEID FROM Movie_Genres MG WHERE";
 					for(int i=0;i<selectedGenreList.size();i++)
 		            {
 						FinalSubQuery += " MG.GENRE = '"+selectedGenreList.get(i)+"' "+ANDOR.getSelectedItem()+"";
 		            }
-					if(selectedCountryList.size()>0){ 
+					if(selectedGenreList.size()>0){ 
 						FinalSubQuery = FinalSubQuery.substring(0, FinalSubQuery.length()-3);
 					}
 					if(selectedCountryList.size()>0){ 
@@ -398,7 +402,8 @@ class MainClass extends JFrame {
 		            }
 					for(int i=0;i<selectedCastList.size();i++)
 		            {
-						FinalSubQuery += " MA.ACTORNAME = '"+selectedCastList.get(i)+"' "+ANDOR.getSelectedItem()+"";
+						String actor = selectedCastList.get(i).replace("'", "''");
+						FinalSubQuery += " MA.ACTORNAME = '"+actor+"' "+ANDOR.getSelectedItem()+"";
 		            }
 					if(selectedCastList.size()>0){ 
 						FinalSubQuery = FinalSubQuery.substring(0, FinalSubQuery.length()-3);
@@ -408,7 +413,8 @@ class MainClass extends JFrame {
 		            }
 					for(int i=0;i<selectedDirectorList.size();i++)
 		            {
-						FinalSubQuery += " MD.DIRECTORNAME = '"+selectedDirectorList.get(i)+"' "+ANDOR.getSelectedItem()+"";
+						String director = selectedDirectorList.get(i).replace("'", "''");
+						FinalSubQuery += " MD.DIRECTORNAME = '"+director+"' "+ANDOR.getSelectedItem()+"";
 		            }
 					if(selectedDirectorList.size()>0){ 
 						FinalSubQuery = FinalSubQuery.substring(0, FinalSubQuery.length()-3);
@@ -455,25 +461,28 @@ class MainClass extends JFrame {
 		} else {
 			selectedCastList = (ArrayList<String>) castList.getSelectedValuesList();
 		}
+		if(contryList.getSelectedValuesList().isEmpty()) {
+			selectedCountryList = new ArrayList();
+		} else {
+			selectedCountryList = (ArrayList<String>) contryList.getSelectedValuesList();
+		}
 		if(directorList.getSelectedValuesList().isEmpty()) {
 			selectedDirectorList = new ArrayList();
 		} else {
 			selectedDirectorList = (ArrayList<String>) directorList.getSelectedValuesList();
 		}
-		
 		if(tagList.getSelectedValuesList().isEmpty()) {
 			selectedTagList = new ArrayList();
 		} else {
 			selectedTagList = (ArrayList<String>) tagList.getSelectedValuesList();
 		}
 		
-        String FinalSubQuery = "SELECT MG.MOVIEID FROM Movie_Genres MG";
-        FinalSubQuery = (selectedGenreList.size()>0)?FinalSubQuery+" WHERE":FinalSubQuery;
+        String FinalSubQuery = "SELECT MG.MOVIEID FROM Movie_Genres MG WHERE";
 		for(int i=0;i<selectedGenreList.size();i++)
         {
 			FinalSubQuery += " MG.GENRE = '"+selectedGenreList.get(i)+"' "+ANDOR.getSelectedItem()+"";
         }
-		if(selectedCountryList.size()>0){ 
+		if(selectedGenreList.size()>0){ 
 			FinalSubQuery = FinalSubQuery.substring(0, FinalSubQuery.length()-3);
 		}
 		if(selectedCountryList.size()>0){ 
@@ -491,7 +500,8 @@ class MainClass extends JFrame {
         }
 		for(int i=0;i<selectedCastList.size();i++)
         {
-			FinalSubQuery += " MA.ACTORNAME = '"+selectedCastList.get(i)+"' "+ANDOR.getSelectedItem()+"";
+			String actor = selectedCastList.get(i).replace("'", "''");
+			FinalSubQuery += " MA.ACTORNAME = '"+actor+"' "+ANDOR.getSelectedItem()+"";
         }
 		if(selectedCastList.size()>0){ 
 			FinalSubQuery = FinalSubQuery.substring(0, FinalSubQuery.length()-3);
@@ -502,27 +512,32 @@ class MainClass extends JFrame {
         }
 		for(int i=0;i<selectedDirectorList.size();i++)
         {
-			FinalSubQuery += " MD.DIRECTORNAME = '"+selectedDirectorList.get(i)+"' "+ANDOR.getSelectedItem()+"";
+			String director = selectedDirectorList.get(i).replace("'", "''");
+			FinalSubQuery += " MD.DIRECTORNAME = '"+director+"' "+ANDOR.getSelectedItem()+"";
         }
 		if(selectedDirectorList.size()>0){ 
 			FinalSubQuery = FinalSubQuery.substring(0, FinalSubQuery.length()-3);
 		}
 		//Tag
 		if(selectedTagList.size()>0){ 
-        	FinalSubQuery += "\nINTERSECT\nSELECT MT.MOVIEID FROM TAGS T, MOVIE_TAGS MT WHERE MT.TAGID=T.ID AND";
+        	FinalSubQuery += "\nINTERSECT\nSELECT MT.MOVIEID FROM TAGS T, MOVIE_TAGS MT WHERE MT.TAGID=T.ID AND (";
         }
 		for(int i=0;i<selectedTagList.size();i++)
         {
 			String[] tagsR = selectedTagList.get(i).split("   ");
 			FinalSubQuery += " T.ID = '"+tagsR[0]+"' "+ANDOR.getSelectedItem()+"";
         }
-		FinalSubQuery = FinalSubQuery.substring(0, FinalSubQuery.length()-3);
-//		System.out.println( "AND MT.TAGWEIGHT"+weightRel.getSelectedItem()+""+weightVal.getText());
-		if(!weightVal.getText().isEmpty()) {
-			FinalSubQuery += " AND MT.TAGWEIGHT"+weightRel.getSelectedItem()+""+weightVal.getText();
-		} else {
+		if(selectedTagList.size()>0){ 
 			FinalSubQuery = FinalSubQuery.substring(0, FinalSubQuery.length()-3);
 		}
+		//FinalSubQuery = FinalSubQuery.substring(0, FinalSubQuery.length()-3);
+//		System.out.println( "AND MT.TAGWEIGHT"+weightRel.getSelectedItem()+""+weightVal.getText());
+		if(!weightVal.getText().isEmpty()) {
+			FinalSubQuery += ") AND MT.TAGWEIGHT"+weightRel.getSelectedItem()+""+weightVal.getText();
+		} else if(selectedTagList.size()>0) {
+			FinalSubQuery += ")";
+		}
+		
 		
 		FinalSubQuery = "SELECT DISTINCT M.MOVIEID FROM MOVIES M WHERE M.MOVIEID IN \n("+FinalSubQuery+") AND MYEAR>="+fromYear.getSelectedItem()+" AND MYEAR<="+toYear.getSelectedItem()+"";
 		
@@ -573,6 +588,25 @@ class MainClass extends JFrame {
         }
 
 		UserResultSubQuery = UserResultSubQuery.substring(0, UserResultSubQuery.length()-3);
+		
+		if(selectedTagList.size()>0){ 
+			UserResultSubQuery += " AND U.MOVIEID IN (";
+		}
+		
+		//Tag
+		if(selectedTagList.size()>0){ 
+			UserResultSubQuery += "\nSELECT MT.MOVIEID FROM TAGS T, MOVIE_TAGS MT WHERE MT.TAGID=T.ID AND (";
+        }
+		for(int i=0;i<selectedTagList.size();i++)
+        {
+			String[] tagsR = selectedTagList.get(i).split("   ");
+			UserResultSubQuery += " MT.TAGID = '"+tagsR[0]+"' "+ANDOR.getSelectedItem()+"";
+        }
+		if(selectedTagList.size()>0){ 
+			UserResultSubQuery = UserResultSubQuery.substring(0, UserResultSubQuery.length()-3);
+			UserResultSubQuery +="))";
+		}
+				
 		queryarea.setText(UserResultSubQuery);
 		try {
 			ResultSet rs12 = null;
@@ -767,6 +801,7 @@ class MainClass extends JFrame {
 		ANDOR.addItem("AND");
 		movieAttrFields.add(new JLabel("Search Between Attribute Values: "));
 		movieAttrFields.add(ANDOR);
+		ANDOR.setSelectedIndex(0);
 		
 		JSplitPane attr1 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, firstColumnPane, countryPane);
 		attr1.setResizeWeight(.4d);
